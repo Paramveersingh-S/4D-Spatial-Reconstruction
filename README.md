@@ -22,6 +22,19 @@
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="assets/screenshot1.png" width="48%" alt="Dashboard Overview">
+  <img src="assets/screenshot2.png" width="48%" alt="WebGL Point Cloud Viewport">
+</p>
+<p align="center">
+  <img src="assets/screenshot3.png" width="48%" alt="Live Telemetry Tracking">
+  <img src="assets/screenshot4.png" width="48%" alt="Cinematic Neon Bloom">
+</p>
+
+---
+
 ## 🎯 What Is This?
 
 **The Impossible Drone Camera** is a full-stack AI application that takes standard monocular drone video and reconstructs it into an interactive **4D point cloud** (3D + Time). Powered by the **4RC** (4D Reconstruction via Conditional Querying) model, users can:
