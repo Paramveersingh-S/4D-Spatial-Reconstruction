@@ -42,9 +42,12 @@ router = APIRouter()
 @router.get("/health", response_model=HealthResponse, tags=["System"])
 async def health_check():
     """Detailed system health check."""
-    import torch
+    try:
+        import torch
+        gpu_available = torch.cuda.is_available()
+    except ImportError:
+        gpu_available = False
 
-    gpu_available = torch.cuda.is_available()
     device = settings.MODEL_DEVICE
     if device == "cuda" and not gpu_available:
         device = "cpu (cuda requested but unavailable)"

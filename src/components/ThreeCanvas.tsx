@@ -6,6 +6,9 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { TrackedObject, PointCloudParticle } from "../types";
 import { generateEnvironmentPoints } from "../data";
 
@@ -29,12 +32,12 @@ export default function ThreeCanvas({
   showGhostPaths,
 }: ThreeCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const stateRef = useRef({ currentTime, selectedObjectId, cameraMode, showGhostPaths });
+  const stateRef = useRef({ currentTime, selectedObjectId, cameraMode, showGhostPaths, onSelectObject });
 
   // Update references to prevent dirty closures in the render tick
   useEffect(() => {
-    stateRef.current = { currentTime, selectedObjectId, cameraMode, showGhostPaths };
-  }, [currentTime, selectedObjectId, cameraMode, showGhostPaths]);
+    stateRef.current = { currentTime, selectedObjectId, cameraMode, showGhostPaths, onSelectObject };
+  }, [currentTime, selectedObjectId, cameraMode, showGhostPaths, onSelectObject]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -57,6 +60,17 @@ export default function ThreeCanvas({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
+
+    // 3.5 Post-Processing (Neon Cinematic Bloom)
+    const renderScene = new RenderPass(scene, camera);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.4, 0.85);
+    bloomPass.threshold = 0.15;
+    bloomPass.strength = 1.6; // High intensity for that futuristic glow
+    bloomPass.radius = 0.8;
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(renderScene);
+    composer.addPass(bloomPass);
 
     // 4. Orbit Controls (Only fully engaged in Free Cam mode)
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -238,7 +252,7 @@ export default function ThreeCanvas({
       if (intersects.length > 0) {
         const hitId = intersects[0].object.userData.id;
         if (hitId) {
-          onSelectObject(hitId);
+          stateRef.current.onSelectObject(hitId);
         }
       } else {
         // Did not hit anything, do not automatically deselect so we maintain focus
@@ -249,12 +263,12 @@ export default function ThreeCanvas({
 
     // 9. Interactive Particle Simulation Loop
     let animationFrameId: number;
-    const clock = new THREE.Clock();
+    let startTime = performance.now();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
-      const elapsed = clock.getElapsedTime();
+      const elapsed = (performance.now() - startTime) / 1000;
       const currentSimTime = stateRef.current.currentTime;
       const currentSelected = stateRef.current.selectedObjectId;
       const currentMode = stateRef.current.cameraMode;
@@ -343,7 +357,8 @@ export default function ThreeCanvas({
       }
 
       controls.update();
-      renderer.render(scene, camera);
+      // Replace standard renderer with the glowing post-processing composer
+      composer.render();
     };
 
     animate();
@@ -357,6 +372,7 @@ export default function ThreeCanvas({
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      composer.setSize(w, h);
     };
 
     window.addEventListener("resize", handleResize);
@@ -370,7 +386,7 @@ export default function ThreeCanvas({
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [trackedObjects, onSelectObject, pointConfidenceFilter]);
+  }, []); // Run only once on mount. Use stateRef to access dynamic values safely.
 
   return (
     <div

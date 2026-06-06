@@ -163,7 +163,8 @@ export function generateEnvironmentPoints(): PointCloudParticle[] {
       x: rx,
       y: ry,
       z: rz,
-      color: "rgba(6, 182, 212, 0.25)", // transparent cyan visual flow
+      // Using standard hex since Three.js Color parsing doesn't natively accept rgba strings with alpha in this context.
+      color: "#06b6d4", // transparent cyan visual flow
       size: Math.random() * 0.04 + 0.02,
     });
   }

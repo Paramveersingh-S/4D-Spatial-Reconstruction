@@ -118,12 +118,13 @@ export default function App() {
     let step = 0;
     const interval = setInterval(() => {
       setPipelineSteps((prev) => {
+        const currentIdx = prev.findIndex(p => p.status === "processing");
+        if (currentIdx === -1) return prev;
+        
         const updated = [...prev];
-        // Complete current step
-        updated[step].status = "completed";
-        // Start next step if exists
-        if (step + 1 < updated.length) {
-          updated[step + 1].status = "processing";
+        updated[currentIdx] = { ...updated[currentIdx], status: "completed" };
+        if (currentIdx + 1 < updated.length) {
+          updated[currentIdx + 1] = { ...updated[currentIdx + 1], status: "processing" };
         }
         return updated;
       });
