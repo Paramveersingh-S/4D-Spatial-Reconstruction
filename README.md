@@ -25,12 +25,12 @@
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="assets/screenshot1.png" width="48%" alt="Dashboard Overview">
-  <img src="assets/screenshot2.png" width="48%" alt="WebGL Point Cloud Viewport">
+  <img src="assets/images/Screenshot (472).png" width="48%" alt="Dashboard Overview">
+  <img src="assets/images/Screenshot (473).png" width="48%" alt="WebGL Point Cloud Viewport">
 </p>
 <p align="center">
-  <img src="assets/screenshot3.png" width="48%" alt="Live Telemetry Tracking">
-  <img src="assets/screenshot4.png" width="48%" alt="Cinematic Neon Bloom">
+  <img src="assets/images/Screenshot (474).png" width="48%" alt="Live Telemetry Tracking">
+  <img src="assets/images/Screenshot (475).png" width="48%" alt="Cinematic Neon Bloom">
 </p>
 
 ---
